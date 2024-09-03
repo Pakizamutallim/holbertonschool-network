@@ -3,6 +3,3 @@
 
 # Using netstat (works on most Linux distributions)
 sudo netstat -tulnp | grep LISTEN
-
-# Alternatively, using ss (a more modern tool)
-# sudo ss -tulnp | grep LISTEN
