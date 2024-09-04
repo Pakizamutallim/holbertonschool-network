@@ -10,24 +10,26 @@ fi
 # Backup the original /etc/hosts file
 cp /etc/hosts /etc/hosts.backup
 
-# Use a temporary file to build the new /etc/hosts content
+# Create a temporary file
 temp_file=$(mktemp)
 
-# Write all non-matching lines to the temporary file
+# Process /etc/hosts and modify entries
 while IFS= read -r line; do
-    if [[ "$line" =~ ^127\.0\.0\.1 ]]; then
+    # Exclude the lines that need to be updated
+    if [[ $line =~ ^127\.0\.0\.1\s+localhost ]]; then
+        echo "127.0.0.2 localhost" >> "$temp_file"
+    elif [[ $line =~ facebook\.com ]]; then
+        # Skip facebook.com lines
         continue
-    elif [[ "$line" =~ facebook\.com ]]; then
-        continue
+    else
+        echo "$line" >> "$temp_file"
     fi
-    echo "$line" >> "$temp_file"
 done < /etc/hosts
 
-# Add the new entries
-echo "127.0.0.2 localhost" >> "$temp_file"
+# Add the new facebook.com entry
 echo "8.8.8.8 facebook.com" >> "$temp_file"
 
-# Move the updated temp file to /etc/hosts
+# Replace the original /etc/hosts with the updated one
 mv "$temp_file" /etc/hosts
 
 echo "Hosts file updated successfully."
